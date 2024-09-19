@@ -16,7 +16,7 @@ export const useFetch = (url) => {
             setLoading(false)
             return
         } else if (inProgressRequests.has(url)) {
-            console.log(`Waiting for in-progress request for URL: ${url}`)
+            console.log(`bringing from cached URL: ${url}`)
             setLoading(true)
             inProgressRequests.get(url).then((data) => {
                 setResult(data)
