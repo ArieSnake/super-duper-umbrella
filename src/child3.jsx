@@ -1,34 +1,31 @@
-import React, { useMemo } from "react"
-import { useFetch } from "./useFetch"
+// child3.jsx
+import React from 'react';
+import { useFetch } from './useFetch';
 
-const Child3 = React.memo(() => {
-    const { result, loading, error, refetch } = useFetch('https://fakestoreapi.com/products')
+const Child3 = () => {
+  const { result, loading, error, refetch } = useFetch('https://fakestoreapi.com/products')
 
-    const dataLength = useMemo(() => {
-        return result ? result.length : 0
-    }, [result])
+  const dataLength = result ? result.length : 0
 
-    return (
+  return (
+    <div>
+      <h2>Child 3</h2>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error.message || 'An error occurred'}</p>}
+      {result && (
         <div>
-            <h1>Child 3</h1>
-            {loading && <p>Loading...</p>}
-            {error && <p>Error: {error.message}</p>}
-            
-            
-            {result && (
-                <div>
-                    <p>Data length: {dataLength}</p>
-                    <ul>
-                        {result.map(elm => (
-                            <li key={elm.id}>{elm.title}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-            
-            <button onClick={refetch}>Refetch Data</button>
+          <p>Data length: {dataLength}</p>
+          <ul>
+            {result.map((item) => (
+              <li key={item.id}>{item.title}</li>
+            ))}
+          </ul>
         </div>
-    )
-})
+      )}
+      <button onClick={refetch}>Refetch Data</button>
+    </div>
+  )
+}
 
-export default Child3
+export default React.memo(Child3)
+
