@@ -1,52 +1,55 @@
-import { useEffect, useState, useCallback } from 'react'
+// useFetch.js
+import { useEffect, useState, useCallback } from 'react';
 
-const cache = new Map()
-const inProgressRequests = new Map()
+const cache = new Map();
+const inProgressRequests = new Map();
 
 export const useFetch = (url) => {
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Start with false
 
   const fetchData = useCallback(() => {
-    const cachedData = cache.get(url)
+    if (!url) return;
+
+    const cachedData = cache.get(url);
 
     if (cachedData && cachedData.expiry > Date.now()) {
-    
-      console.log(`Using cached data for URL: ${url}`)
-      setResult(cachedData.data)
-      setLoading(false)
+      // Use cached data
+      console.log(`Using cached data for URL: ${url}`);
+      setResult(cachedData.data);
+      setLoading(false);
     } else if (inProgressRequests.has(url)) {
-     
-      console.log(`Waiting for in-progress request for URL: ${url}`)
-      setLoading(true)
+      // Wait for in-progress request
+      console.log(`Waiting for in-progress request for URL: ${url}`);
+      setLoading(true);
       inProgressRequests
         .get(url)
         .then((data) => {
-          setResult(data)
-          setLoading(false)
+          setResult(data);
+          setLoading(false);
         })
         .catch((err) => {
-          setError(err)
-          setLoading(false)
-        })
+          setError(err);
+          setLoading(false);
+        });
     } else {
-      
-      console.log(`Fetching new data for URL: ${url}`)
-      setLoading(true)
+      // Fetch new data
+      console.log(`Fetching new data for URL: ${url}`);
+      setLoading(true);
 
       const requestPromise = fetch(url)
         .then((res) => {
-          console.log('Network request made')
-          return res.json()
+          console.log('Network request made');
+          return res.json();
         })
         .then((data) => {
-          const expiryTime = Date.now() + 4 * 60 * 1000
-          cache.set(url, { data, expiry: expiryTime })
-          return data
-        })
+          const expiryTime = Date.now() + 4 * 60 * 1000; // 4 minutes
+          cache.set(url, { data, expiry: expiryTime });
+          return data;
+        });
 
-      inProgressRequests.set(url, requestPromise)
+      inProgressRequests.set(url, requestPromise);
 
       requestPromise
         .then((data) => {
@@ -54,28 +57,25 @@ export const useFetch = (url) => {
           setLoading(false);
         })
         .catch((err) => {
-          setError(err)
-          setLoading(false)
+          setError(err);
+          setLoading(false);
         })
         .finally(() => {
-          inProgressRequests.delete(url)
-        })
+          inProgressRequests.delete(url);
+        });
     }
-  }, [url])
+  }, [url]);
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchData();
+  }, [fetchData]);
 
   const refetch = useCallback(() => {
-    console.log(`Refetching data for URL: ${url}`)
-    cache.delete(url)
-    fetchData()
-  }, [fetchData, url])
+    if (!url) return;
+    console.log(`Refetching data for URL: ${url}`);
+    cache.delete(url);
+    fetchData();
+  }, [fetchData, url]);
 
-  return { result, error, loading, refetch }
-}
-
-
-
-
+  return { result, error, loading, refetch };
+};
