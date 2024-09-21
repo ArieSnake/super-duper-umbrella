@@ -1,15 +1,14 @@
-// ChildWithInput.jsx
 import React, { useState } from 'react';
 import { useFetch } from './useFetch';
 
 const ChildWithInput = () => {
-  const [url, setUrl] = useState('');
-  const [submittedUrl, setSubmittedUrl] = useState(null);
+  const [url, setUrl] = useState('')
+  const [submittedUrl, setSubmittedUrl] = useState(null)
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmittedUrl(url);
-  };
+    e.preventDefault()
+    setSubmittedUrl(url)
+  }
 
   const { result, loading, error, refetch } = useFetch(submittedUrl);
 
@@ -47,7 +46,7 @@ const ChildWithInput = () => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default React.memo(ChildWithInput);
+export default React.memo(ChildWithInput)
